@@ -1,4 +1,11 @@
+// Import inquirer for taking input from user
 import inquirer from "inquirer";
+// Import chalk for giving colour 
+import chalk from "chalk";
+console.log("\t\t\t\n", chalk.bgBlue(`==============================
+  Employee Management System
+==============================\n`));
+// List of Employees
 let listOfEmloyees = [
     {
         employeeId: 24567,
@@ -16,46 +23,61 @@ let listOfEmloyees = [
         salary: 75000
     }
 ];
+// Make a function of add employee
 async function addEmployee() {
     let num_add_employee = await inquirer.prompt([
         {
             name: "num",
-            type: "number",
-            message: "How many employees you have to add in list?"
+            type: "list",
+            message: "How many employees you have to add in list?",
+            choices: ["1", "2", "3"]
         }
     ]);
-    for (let i = 0; i < num_add_employee.num; i++) {
-        let employeeId = await inquirer.prompt([
-            {
-                name: "id",
-                type: "number",
-                message: "Please, Enter the ID"
+    async function forLoop() {
+        for (let i = 0; i < num_add_employee.num; i++) {
+            let employeeId = await inquirer.prompt([
+                {
+                    name: "id",
+                    type: "number",
+                    message: "Please, Enter the ID"
+                }
+            ]);
+            let name = await inquirer.prompt([
+                {
+                    name: "Name",
+                    type: "input",
+                    message: "Please, Enter the name of employee"
+                }
+            ]);
+            let salary = await inquirer.prompt([
+                {
+                    name: "sal",
+                    type: "number",
+                    message: "Please, Enter the Salary"
+                }
+            ]);
+            if (isNaN(employeeId.id) || isNaN(salary.sal)) {
+                console.error(chalk.red("\n'Invalid Input'. Employee ID and Salary should be in type number \n"));
             }
-        ]);
-        let name = await inquirer.prompt([
-            {
-                name: "Name",
-                type: "input",
-                message: "Please, Enter the name of employee"
+            else if (typeof employeeId.id === "number" && typeof salary.sal === "number") {
+                let employee = {
+                    name: name.Name,
+                    employeeId: employeeId.id,
+                    salary: salary.sal
+                };
+                listOfEmloyees.push(employee);
+                console.clear();
+                console.log("\n\n");
+                console.table(employee);
+                console.log("\n\n");
             }
-        ]);
-        let salary = await inquirer.prompt([
-            {
-                name: "sal",
-                type: "number",
-                message: "Please, Enter the Salary"
-            }
-        ]);
-        let employee = {
-            name: name.Name,
-            employeeId: employeeId.id,
-            salary: salary.sal
-        };
-        listOfEmloyees.push(employee);
+        }
     }
+    await forLoop();
 }
 async function showEmployeeList() {
-    console.log(listOfEmloyees);
+    console.clear();
+    console.table(listOfEmloyees);
 }
 async function filteredBySalary() {
     let salary = await inquirer.prompt([
@@ -65,8 +87,9 @@ async function filteredBySalary() {
             message: "Please Enter the amount. Amount must be 'Greater Than' You want to get"
         }
     ]);
-    let filter = listOfEmloyees.filter((employee) => employee.salary > salary.sal);
-    console.log(filter);
+    let filter = listOfEmloyees.filter((employee) => employee.salary >= salary.sal);
+    console.clear();
+    console.table(filter);
 }
 async function filteredByName() {
     let Name = await inquirer.prompt([
@@ -77,7 +100,8 @@ async function filteredByName() {
         }
     ]);
     let filter = listOfEmloyees.filter((employee) => employee.name.includes(Name.name));
-    console.log(filter);
+    console.clear();
+    console.table(filter);
 }
 async function deleteEmployeeById() {
     let employeeId = await inquirer.prompt([
